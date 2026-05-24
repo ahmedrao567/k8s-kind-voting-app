@@ -1,4 +1,4 @@
-name: Build Vote
+name: CI Vote
 
 on:
   push:
@@ -6,36 +6,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  call-docker-build:
+  build-test-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    name: Vote Call Docker Build
+      - name: Build vote image
+        run: docker build -t local/vote:ci ./vote
 
-    uses: dockersamples/.github/.github/workflows/reusable-docker-build.yaml@main
+      - name: Run vote container
+        run: docker run -d --name vote-ci -p 8080:80 local/vote:ci
 
-    permissions:
-      contents: read
-      packages: write
-      pull-requests: write
-    
-    secrets:
-      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME || secrets.DOCKER_USERNAME }}
+      - name: Smoke test vote app
+        run: |
+          sleep 8
+          curl -fsS http://localhost:8080 > /dev/null
 
-      dockerhub-token: ${{ secrets.DOCKERHUB_PASSWORD || secrets.DOCKERHUB_TOKEN || secrets.DOCKER_PASSWORD }}
+      - name: Print logs on failure
+        if: failure()
+        run: docker logs vote-ci
 
-    with:
-      dockerhub-enable: true
-      ghcr-enable: true
-
-      image-names: |
-        ghcr.io/${{ github.repository_owner }}/example-voting-app-vote
-        ${{ github.repository_owner }}/examplevotingapp_vote
-
-      tag-rules: |
-        type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-        type=raw,value=before,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-        type=raw,value=after,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-        type=ref,event=pr
-
-      context: vote
-
-      platforms: linux/amd64,linux/arm64,linux/arm/v7
+      - name: Cleanup
+        if: always()
+        run: docker rm -f vote-ci || true

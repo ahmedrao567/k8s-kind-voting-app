@@ -1,4 +1,4 @@
-name: Build Worker
+name: CI Worker
 
 on:
   push:
@@ -6,34 +6,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  call-docker-build:
+  build-test-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    name: Worker Call Docker Build
+      - name: Build worker image
+        run: docker build -t local/worker:ci ./worker
 
-    uses: dockersamples/.github/.github/workflows/reusable-docker-build.yaml@main
+      - name: Run worker with dependencies
+        run: |
+          docker compose up -d --build redis db worker
+          sleep 15
+          docker ps --filter name=worker --filter status=running --format '{{.Names}}' | grep worker
 
-    permissions:
-      contents: read
-      packages: write
-      pull-requests: write
-    
-    secrets:
-      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME || secrets.DOCKER_USERNAME }}
+      - name: Print worker logs
+        run: docker logs worker || true
 
-      dockerhub-token: ${{ secrets.DOCKERHUB_PASSWORD || secrets.DOCKERHUB_TOKEN || secrets.DOCKER_PASSWORD }}
-
-    with:
-      dockerhub-enable: true
-      ghcr-enable: true
-
-      image-names: |
-        ghcr.io/${{ github.repository_owner }}/example-voting-app-worker
-        ${{ github.repository_owner }}/examplevotingapp_worker
-
-      tag-rules: |
-        type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-        type=ref,event=pr
-
-      context: worker
-
-      platforms: linux/amd64,linux/arm64,linux/arm/v7
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v --remove-orphans
