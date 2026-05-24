@@ -2,17 +2,8 @@ name: Build Vote
 
 on:
   push:
-    branches:
-      - 'main'
-    paths:
-      - 'vote/**'
-      - '.github/workflows/call-docker-build-vote.yaml'
   pull_request:
-    branches:
-      - 'main'
-    paths:
-      - 'vote/**'
-      - '.github/workflows/call-docker-build-vote.yaml'
+  workflow_dispatch:
 
 jobs:
   call-docker-build:
