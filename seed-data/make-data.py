@@ -1,4 +1,3 @@
-# this creates urlencode-friendly files without EOL
 import urllib.parse
 
 outfile = open('postb', 'w')

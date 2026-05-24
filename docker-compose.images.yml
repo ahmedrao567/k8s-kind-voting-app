@@ -1,9 +1,3 @@
-# for running in docker compose with prebuilt images
-
-# version is now using "compose spec"
-# v2 and v3 are now combined!
-# docker-compose v1.27+ required
-
 services:
   vote:
     image: dockersamples/examplevotingapp_vote
