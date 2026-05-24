@@ -5,6 +5,7 @@ RUN apt-get update -qq && apt-get install -qy --no-install-recommends \
     bzip2 \
     curl \
     libfontconfig1 \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 ADD . /app
 WORKDIR /app
