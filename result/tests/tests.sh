@@ -5,16 +5,19 @@ while ! timeout 1 bash -c "echo > /dev/tcp/vote/80"; do
 done
 
 curl -sS -X POST --data "vote=b" http://vote > /dev/null
-sleep 10
 
-if phantomjs render.js http://result | grep -q '1 vote'; then
-  echo -e "\\e[42m------------"
-  echo -e "\\e[92mTests passed"
-  echo -e "\\e[42m------------"
-  exit 0
-else
-  echo -e "\\e[41m------------"
-  echo -e "\\e[91mTests failed"
-  echo -e "\\e[41m------------"
-  exit 1
-fi
+for i in $(seq 1 30); do
+  if curl -fsS http://result | grep -q '1 vote'; then
+    echo -e "\e[42m------------"
+    echo -e "\e[92mTests passed"
+    echo -e "\e[42m------------"
+    exit 0
+  fi
+
+  sleep 2
+done
+
+echo -e "\e[41m------------"
+echo -e "\e[91mTests failed"
+echo -e "\e[41m------------"
+exit 1
