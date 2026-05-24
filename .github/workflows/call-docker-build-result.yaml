@@ -28,7 +28,7 @@ jobs:
 
       image-names: |
         ghcr.io/${{ github.repository_owner }}/example-voting-app-result
-        ${{ secrets.DOCKERHUB_USERNAME || secrets.DOCKER_USERNAME }}/examplevotingapp_result
+        ${{ github.repository_owner }}/examplevotingapp_result
 
       tag-rules: |
         type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
