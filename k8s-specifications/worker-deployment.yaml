@@ -15,5 +15,5 @@ spec:
         app: worker
     spec:
       containers:
-      - image: docker.io/ahmedikram567/worker-app:latest
+      - image: docker.io/ahmedikram567/worker-app
         name: worker
