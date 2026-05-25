@@ -4,10 +4,20 @@ metadata:
   name: voting-app
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: vote=docker.io/ahmedikram567/vote-app:latest,result=docker.io/ahmedikram567/result-app:latest,worker=docker.io/ahmedikram567/worker-app:latest
-    argocd-image-updater.argoproj.io/vote.update-strategy: newest-build
-    argocd-image-updater.argoproj.io/result.update-strategy: newest-build
-    argocd-image-updater.argoproj.io/worker.update-strategy: newest-build
+    # ===============================
+    # Image Updater configuration
+    # ===============================
+    argocd-image-updater.argoproj.io/image-list: |
+      vote=docker.io/ahmedikram567/vote-app
+      result=docker.io/ahmedikram567/result-app
+      worker=docker.io/ahmedikram567/worker-app
+
+    # Update strategy (recommended)
+    argocd-image-updater.argoproj.io/vote.update-strategy: semver
+    argocd-image-updater.argoproj.io/result.update-strategy: semver
+    argocd-image-updater.argoproj.io/worker.update-strategy: semver
+
+    # Write changes back to Git repo
     argocd-image-updater.argoproj.io/write-back-method: git
     argocd-image-updater.argoproj.io/git-branch: main
 spec:
