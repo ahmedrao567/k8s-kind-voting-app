@@ -29,6 +29,21 @@ This guide covers the steps to:
 * A [Postgres](https://hub.docker.com/_/postgres/) database backed by a Docker volume
 * A [Node.js](/result) web app which shows the results of the voting in real time
 
+## Argo CD Image Updater
+
+This repo now includes an Argo CD `Application` manifest in [argocd/voting-app.yaml](argocd/voting-app.yaml) so Argo CD can sync the manifests from [k8s-specifications](k8s-specifications).
+
+The `vote`, `result`, and `worker` deployments use explicit `:latest` image tags so Argo CD Image Updater can rewrite them in Git when newer images are available.
+
+To use it:
+
+1. Install Argo CD in the cluster.
+2. Install Argo CD Image Updater.
+3. Apply [argocd/voting-app.yaml](argocd/voting-app.yaml).
+4. Configure registry credentials if your images are private.
+
+If you want true automated updates, replace the sample `dockersamples/*` images with images you build and push to your own registry.
+
 
 
 ## Resume Description

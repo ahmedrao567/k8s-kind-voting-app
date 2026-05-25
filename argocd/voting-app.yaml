@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: voting-app
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: vote=dockersamples/examplevotingapp_vote:latest,result=dockersamples/examplevotingapp_result:latest,worker=dockersamples/examplevotingapp_worker:latest
+    argocd-image-updater.argoproj.io/vote.update-strategy: latest
+    argocd-image-updater.argoproj.io/result.update-strategy: latest
+    argocd-image-updater.argoproj.io/worker.update-strategy: latest
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/git-branch: main
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ahmedrao567/k8s-kind-voting-app.git
+    targetRevision: main
+    path: k8s-specifications
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
