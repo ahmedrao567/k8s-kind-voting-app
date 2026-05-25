@@ -15,7 +15,7 @@ spec:
         app: result
     spec:
       containers:
-      - image: docker.io/ahmedrao/result-app:latest
+      - image: docker.io/ahmedikram567/result-app:latest
         name: result
         ports:
         - containerPort: 80
